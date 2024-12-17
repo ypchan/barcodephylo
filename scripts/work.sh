@@ -9,7 +9,6 @@ is_exist_folder() {
     fi
 }
 
-
 # step0: prepare the taxa table for your group that can be at the genus, family, order... level by comprehensive literature reviews and Indexfungorum.
 
 # step1: download barcode sequences using the script read.GenBank.R, which require that the taxa table must be prepared follow it's rules.
@@ -33,8 +32,13 @@ ls 01_data/ | grep fasta | sed 's/.fasta//' |while read a;do trimal -in 02_mafft
 # step4: find the evolutionary models and concatenate the msa together by the identical identifiers
 is_exist_folder 04_modelfinder
 outgroup_label=Phoma_herbarum_CBS_615.75
-mafft_items=$(ls 03_trimal/*)
-iqtree_modelfinder.py -i ${mafft_items} -o 04_modelfinder --mrbayes_nexus --outgroup ${outgroup_label}
+
+barcode_order="SSU ITS LSU TEF1 RPB2"
+mafft_files=$(for barcode in $barcode_order; do
+    ls *${barcode}* 2>/dev/null
+done | xargs)
+
+iqtree_modelfinder.py -i ${mafft_files} -o 04_modelfinder --mrbayes_nexus --outgroup ${outgroup_label}
 
 # step5: maximum likelihood phylogenetic analysis using iqtree
 is_exist_folder 05_iqtree
@@ -45,4 +49,6 @@ is_exist_folder 06_mrbayes
 
 nohup mpirun -n 4 mb < run_mrbayes.sh # if mpirun does not work, please : nohup bash mb < run_mrbayes &
 
-nohup mpirun -n 4 mb < run_mrbayes.sh # if mpirun does not work, please : nohup bash mb < run_mrbayes &
+# step7: mpboot analysis using Mrbayes
+is_exist_folder 07_mpboot
+mpboot -s 04_modelfinder/concatenated.fna -pre 07_mpboot/mpboot -bb 1000 -sup 05_iqtree/iqtree_ml.treefile &> 07_mpboot/mpboot.log
