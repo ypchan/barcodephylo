@@ -47,7 +47,7 @@ nohup iqtree2 -s 04_modelfinder/concatenated.fna --seqtype DNA -o ${outgroup_lab
 # step6: Bayesian analysis using Mrbayes
 is_exist_folder 06_mrbayes
 
-nohup mpirun -n 4 mb < run_mrbayes.sh # if mpirun does not work, please : nohup bash mb < run_mrbayes &
+nohup mpirun -n 4 mb run_mrbayes.nexus & # if mpirun does not work, please : nohup bash mb < run_mrbayes &
 
 # step7: mpboot analysis using Mrbayes
 is_exist_folder 07_mpboot
