@@ -18,8 +18,8 @@ barcodephylo is a bioinformatics pipeline designed for barcode sequence-based ph
 You can install BPA by cloning this repository and using `pip`:
 
 ```bash
-git clone https://github.com/yourusername/BPA.git
-cd BPA
+git clone https://github.com/yourusername/barcodephylo.git
+cd barcodephylo
 pip install .
 ```
 
