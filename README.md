@@ -2,7 +2,18 @@
 
 **`barcodephylo`** is a bioinformatics pipeline for phylogenetic analysis based on barcode sequences (e.g., ITS, LSU, SSU, RPB2, TUB2). It offers a modular and reproducible workflow from sequence collection to tree construction using tools such as **MAFFT**, **trimal**, **IQ-TREE**, and **MrBayes**.
 
-![Workflow](images/pipeline.jpg)
+![WORKFLOW](https://img.shields.io/badge/WORKFLOW-8A2BE2)
+
+1. QC in-house loci data genereated from Sanger sequencing
+2. Downloading public data using read.GenBank function in APE package
+3. Multiple sequence alignment using mafft
+4. To trimm msa files
+5. To determine the best evolution model and concatenate msa
+6. ML analysis using iqtree/raxml-ng
+7. MrBayes analysis
+8. Minimum Parsimony analysis using mpboot
+9. Time dating using mega
+10. Vissualization using ggtree + Adobe Illustrator
 
 ---
 
@@ -81,7 +92,7 @@ is_exist_folder 04_modelfinder
 outgroup_label=Phoma_herbarum_CBS_615.75
 mafft_items=$(ls 03_trimal/*)
 
-iqtree_modelfinder.py -i ${mafft_items} -o 04_modelfinder   --mrbayes_nexus --outgroup ${outgroup_label}
+iqtree_modelfinder.py -i ${mafft_items} -o 04_modelfinder --mrbayes_nexus --outgroup ${outgroup_label}
 ```
 
 ---
@@ -89,9 +100,13 @@ iqtree_modelfinder.py -i ${mafft_items} -o 04_modelfinder   --mrbayes_nexus --ou
 ### 5️⃣ Build Maximum Likelihood Tree with IQ-TREE
 
 ```bash
-is_exist_folder 05_iqtree
+mkdir -p 05_iqtree
 
-nohup iqtree2 -s 04_modelfinder/concatenated.fna --seqtype DNA   -o ${outgroup_label} --prefix 05_iqtree/iqtree_ml   -T AUTO -p 04_modelfinder/best_scheme.txt --ufboot 1000 --alrt 1000 &
+nohup iqtree2 -s 04_modelfinder/concatenated.fna \
+            --seqtype DNA -o ${outgroup_label} \
+            --prefix 05_iqtree/iqtree_ml -T AUTO \
+            -p 04_modelfinder/best_scheme.txt \
+            --ufboot 1000 --alrt 1000 &
 ```
 
 ---
@@ -99,7 +114,7 @@ nohup iqtree2 -s 04_modelfinder/concatenated.fna --seqtype DNA   -o ${outgroup_l
 ### 6️⃣ Bayesian Phylogenetics with MrBayes
 
 ```bash
-is_exist_folder 06_mrbayes
+mkdir -p 06_mrbayes
 
 nohup mpirun -n 4 mb < run_mrbayes.sh &  # Or:
 # nohup bash mb < run_mrbayes &
@@ -107,18 +122,22 @@ nohup mpirun -n 4 mb < run_mrbayes.sh &  # Or:
 
 ---
 
-## 📁 Folder Structure
+## 📁 Project Folder
+For a certain phylogenetic analysis project, the following is a example folder.
 
 ```
-barcodephylo/
-├── 01_data/              # Input barcode FASTA files
+project/
+├── 00_in_house_data/
+├── 01_data/              # Public loci dada and concatenating them to in house dada
 ├── 02_mafft/             # MAFFT alignments
 ├── 03_trimal/            # Trimmed alignments
 ├── 04_modelfinder/       # Concatenated alignments and model info
-├── 05_iqtree/            # IQ-TREE results
-├── 06_mrbayes/           # MrBayes outputs
-├── scripts/              # Useful scripts and tools
-└── README.md             # This file
+├── 05_iqtree/            # IQ-TREE analysis
+├── 05_raxml_ng/          # raxml-ng analysis
+├── 06_mrbayes/           # MrBayes analysis
+├── 07_mpboot/            # manimum parsimony analysis uing mpboot
+├── 08_realtime/          # for time dating
+└── work.sh               # all command-lines
 ```
 
 ---
