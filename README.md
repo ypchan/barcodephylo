@@ -62,7 +62,7 @@ for (marker in marker_lst) {
   outfilename <- paste0(species, '_', marker, '.fasta')
   cat(outfilename, '\n')
   df_marker <- taxa_tbl %>% drop_na(all_of(marker))
-  marker_obj <- read.GenBank(unlist(df_marker[[marker]]), seq.names = FALSE, quiet = FALSE)
+  marker_obj <- read.GenBank(unlist(df_marker[[marker]]), seq.names = FALSE, quiet = FALSE, chunk.size = 20) # adjust the chunk.size to find the problematic accessions
   names(marker_obj) <- df_marker$longLabel
   write.FASTA(marker_obj, outfilename)
 }
