@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Find best substitution models per alignment with IQ-TREE ModelFinder
 Optionally generating a MrBayes-ready NEXUS, and log all steps with a startup banner.
@@ -67,7 +67,7 @@ def setup_logger(outdir: Path, level: str = "INFO") -> logging.Logger:
     logger.setLevel(getattr(logging, level.upper(), logging.INFO))
     logger.handlers.clear()
 
-    fmt = logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s")
+    fmt = logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
     fh = logging.FileHandler(log_file, encoding="utf-8")
     fh.setFormatter(fmt)
@@ -391,7 +391,7 @@ def parse_args() -> argparse.Namespace:
                    choices=["mrbayes", "iqtree"], default="mrbayes",
                    help="Restrict model search to a supported set (mrbayes|iqtree).")
     p.add_argument("--threads", type=int, default=4, help="Number of IQ-TREE threads (default: 4).")
-    p.add_argument("--iqtree-bin", type=str, default="iqtree2", help="IQ-TREE executable name (default: iqtree2).")
+    p.add_argument("--iqtree-bin", type=str, default="iqtree3", help="IQ-TREE executable name (default: iqtree3).")
     p.add_argument("--log-level", type=str, default="INFO", help="Logging level (DEBUG/INFO/WARN/ERROR).")
     return p.parse_args()
 
